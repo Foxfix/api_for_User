@@ -1,0 +1,15 @@
+
+{% if user.is_active %}
+    <h2>Hello {{ user.get_full_name }}</h2>
+<ul>
+  <li>Username: {{ user.username }}</li>
+  <li>Accaunt: {% if user.profile.accaunt %}
+      open
+  {% else %} close {% endif %} </li>
+  <li>Balance: {{ user.profile.balance }}</li>  
+</ul>
+<button><h3>Close account</h3> </button>
+{% else %}
+<h1>Our site</h1>
+
+{% endif %}
