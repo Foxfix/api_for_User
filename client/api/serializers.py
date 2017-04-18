@@ -1,15 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-# from rest_framework_jwt.settings import api_settings
+from rest_framework_jwt.settings import api_settings
 from django.db.models import Q
-# from rest_framework.serializers import ( 
-#     CharField,
-#     EmailField,
-#     HyperlinkedIdentityField,
-#     ModelSerializer, 
-#     SerializerMethodField,
-#     ValidationError,
-#     ) 
+from rest_framework.serializers import ( 
+    CharField,
+    EmailField,
+    HyperlinkedIdentityField,
+    ModelSerializer, 
+    SerializerMethodField,
+    ValidationError,
+    ) 
 
 User = get_user_model()
 
@@ -91,37 +91,44 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(allow_blank=True, read_only=True)
-    username = serializers.CharField()
-    password = serializers.CharField()
+    token = CharField(allow_blank=True, read_only=True)
+    username = CharField(allow_blank=True, required=False)
+    email = EmailField(label='Email', allow_blank=True, required=False)
     class Meta:
         model = User
         fields = ('token',
                 'username', 
-                'password')
+                'password',
+                'email')
 
         extra_kwargs = {"password":
                             {"write_only": True}
                             } # password will not be shown in api
     def validate(self, data):
         user_obj = None
+        email = data.get("email", None)
         username= data.get("username", None)
         password = data["password"]
-        if not password and not username:
-            raise serializers.ValidationError('A username or email is required to login.')
+        if not email and not username:
+            raise ValidationError('A username or email is required to login.')
         user = User.objects.filter(
-            Q(password=password) |
+            Q(email=email) |
             Q(username=username)
             ).distinct()
-        user = user.exclude(password__isnull=True).exclude(password__iexact='')
         if user.exists() and user.count() == 1:
-           user = user.first() 
+           user = user.first()
         else:
-            raise serializers.ValidationError("This username/password is not valid.")
-
+            raise ValidationError("This username/email is not valid.")
         if user_obj:
             if not user_obj.check_password(password):
-                raise serializers.ValidationError("Incorrect credentials please try again..")
+                raise ValidationError("Incorrect credentials please try again..")
+        # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
+        # payload = jwt_payload_handler(user_obj)
+        # token = jwt_encode_handler(payload)
         data["token"] = "SOME RANDOM TOKEN"
-        return data
+        return data 
+
+
+   
