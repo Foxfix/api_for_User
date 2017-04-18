@@ -52,7 +52,7 @@ class CustomUserAdmin(UserAdmin):
 
         return [(None, {'fields': ('username',)}),
                 (_('Personal info'), {'fields': ('first_name', 'last_name', 
-                    'email', 'balance', 'passport_number')}),
+                    'email', 'balance', 'passport_number', 'password')}),
                 (_('Permissions'), {'fields': perm_fields}),
                 (_('Important dates'), {'fields': ('last_login', 'date_joined')})] 
 

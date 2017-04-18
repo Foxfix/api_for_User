@@ -7,9 +7,9 @@ from rest_framework.generics import (ListAPIView,
                                     RetrieveAPIView,)
 
 from .serializers import (UserSerializer,
-                        UserDetailSerializer, )
-                        # UserCreateSerializer,
-                        # UserLouser_informationginSerializer)
+                        UserDetailSerializer, 
+                        UserCreateSerializer,
+                        UserLoginSerializer)
 
 from rest_framework.response import Response 
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_204_NO_CONTENT 
@@ -58,10 +58,24 @@ class UserDetailView(APIView):
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-# class UserCreateAPIView(CreateAPIView):
-#     """
-#     API for register of users.
-#     """
-#     queryset = User.objects.all().order_by('-date_joined')
-#     serializer_class = UserCreateSerializer
-#     permission_classes = (AllowAny,)
+class UserCreateAPIView(CreateAPIView):
+    """
+    API for register of users.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserCreateSerializer
+    permission_classes = (AllowAny,)
+
+
+class UserLoginAPIView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserLoginSerializer
+
+
+    def post(self, request, *args, **kwargs):
+        data =  request.data
+        serializer = UserLoginSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            new_data = serializer.data
+            return Response(new_data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
