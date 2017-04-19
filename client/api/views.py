@@ -35,7 +35,7 @@ class UserDetailView(APIView):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserDetailSerializer
-    # permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly, IsAdminUser)
 
 
     def get_object(self, pk):
@@ -67,8 +67,13 @@ class UserCreateAPIView(CreateAPIView):
     permission_classes = (AllowAny,)
 
 
+# from rest_framework_jwt.settings import api_settings
+ 
+# jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+# jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
 class UserLoginAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = (AllowAny,)
     serializer_class = UserLoginSerializer
 
 

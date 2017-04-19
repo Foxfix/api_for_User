@@ -122,12 +122,14 @@ class UserLoginSerializer(serializers.ModelSerializer):
         if user_obj:
             if not user_obj.check_password(password):
                 raise ValidationError("Incorrect credentials please try again..")
+
         # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        # jwt_encode_handler = api_settings.jwt_encode_handler
 
         # payload = jwt_payload_handler(user_obj)
         # token = jwt_encode_handler(payload)
-        data["token"] = "SOME RANDOM TOKEN"
+
+        data["token"] = 'token'
         return data 
 
 
