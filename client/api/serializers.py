@@ -82,6 +82,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
                             } # password will not be shown in api
 
     def validate(self, data):
+        """
+        Update and return a new `User` instance, given the validated data.
+        """
         email = data['email']
         user_qs = User.objects.filter(email=email)
         if user_qs.exists():
@@ -105,6 +108,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
+    '''
+    Serialization for User login.
+    '''
     token = CharField(allow_blank=True, read_only=True)
     username = CharField(allow_blank=True, required=False)
     email = EmailField(label='Email', allow_blank=True, required=False)

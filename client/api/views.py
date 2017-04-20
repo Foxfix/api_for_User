@@ -39,7 +39,7 @@ class UserDetailView(mixins.RetrieveModelMixin,
                     mixins.UpdateModelMixin,
                     GenericAPIView):
     """
-    API for detail of users for admin and owner.
+    API for detail of users for owner.
     """
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
@@ -54,7 +54,9 @@ class UserDetailView(mixins.RetrieveModelMixin,
 
 class UserCreateAPIView(mixins.CreateModelMixin,
                         GenericAPIView):
-
+    """
+    API for create of users.
+    """
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
 
@@ -63,6 +65,9 @@ class UserCreateAPIView(mixins.CreateModelMixin,
 
     
 class UserLoginAPIView(APIView):
+    """
+    API for login users.
+    """
     serializer_class = UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
