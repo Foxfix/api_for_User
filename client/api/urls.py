@@ -18,8 +18,11 @@ urlpatterns = [
 
 
 '''
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9sZ2EiLCJ1c2VyX2lkIjoxLCJlbWFpbCI6IiIsImV4cCI6MTQ4MDYxNDYzNH0.-jWXU6VFrLtiokOX9QPISA1uZNGJv1tYAGPLhR__Gis
 curl -X POST -d "username=olga&password=223355aa" http://127.0.0.1:8000/api/token/
-$ curl -H "Authorization: JWT <your_token>" http://127.0.0.1:8000/api/auth/token/
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9sZ2EiLCJ1c2VyX2lkIjoxLCJlbWFpbCI6IiIsImV4cCI6MTQ4MDYxNDYzNH0.-jWXU6VFrLtiokOX9QPISA1uZNGJv1tYAGPLhR__Gis
+curl -X POST -d "username=olga2&password=223355aa" http://127.0.0.1:8000/api/token/
+$ curl -H "Authorization: JWT " http://127.0.0.1:8000/api/16/
+curl -X GET http://127.0.0.1:8000/api/1/
+
 
 '''

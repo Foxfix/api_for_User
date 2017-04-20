@@ -1,5 +1,6 @@
 from django.db import models
 from django.dispatch import receiver
+from django.conf import settings
 from django.db.models.signals import pre_save
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AbstractUser
@@ -11,9 +12,6 @@ class User(AbstractUser):
     balance = models.DecimalField(max_digits=20,decimal_places=4,default=Decimal('0.0000'))
     passport_number = models.CharField(max_length=15, default="000000")
     accaunt = models.BooleanField(default=True)
-
-
-
 
 
 @receiver(pre_save, sender=User)
@@ -28,15 +26,7 @@ def set_new_user_inactive(sender, instance, **kwargs):
             print("Updating User Record")
 
 
-
-
-
-
-
-
-
-
-
+   
 
 
 

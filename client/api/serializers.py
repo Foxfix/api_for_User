@@ -13,6 +13,8 @@ from rest_framework.serializers import (
 
 User = get_user_model()
 
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
 class UserSerializer(serializers.ModelSerializer):
     '''
@@ -22,15 +24,16 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 
-                'last_name', 
+                'last_name',
+                'passport_number', 
                 'email',
-                'balance',
+                'balance', 
                 )
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
     '''
-    Serialization for User Detail. Used nested relationships.
+    Serialization for User Detail. 
     '''
     class Meta:
         model = User
@@ -41,9 +44,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
                 'username',
                 'passport_number',
                 'accaunt',
-                'password',
                 )
-        read_only_fields = ('balance', 'username')
+        read_only_fields = ('balance', 'username', 'password',)
+
     def update(self, instance, validated_data):
         '''
         Update and return an existing `User` instance, given the validated data.
@@ -52,6 +55,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.email = validated_data.get('email', instance.email)
         instance.passport_number = validated_data.get('passport_number', instance.passport_number)
+        instance.accaunt = validated_data.get('accaunt', instance.accaunt)
         instance.save()
         return instance
 
@@ -76,18 +80,28 @@ class UserCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password":
                             {"write_only": True}
                             } # password will not be shown in api
-    def create(self, validated_data):
-        first_name = validated_data['first_name']
-        last_name = validated_data['last_name']
-        passport_number = validated_data['passport_number']
-        username = validated_data['username']
-        password = validated_data['password']
-        user_obj = User(
-            username = username,)
-        user_obj.set_password(password)
-        user_obj.save()
-        return validated_data
 
+    def validate(self, data):
+        email = data['email']
+        user_qs = User.objects.filter(email=email)
+        if user_qs.exists():
+            raise ValidationError('This users email has already registered.')
+        return data
+
+    def create(self, validated_data):
+        """
+        Create and return a new `User` instance, given the validated data.
+        """
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'])
+        user.save()
+        return user 
+
+    
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -123,13 +137,11 @@ class UserLoginSerializer(serializers.ModelSerializer):
             if not user_obj.check_password(password):
                 raise ValidationError("Incorrect credentials please try again..")
 
-        # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        # jwt_encode_handler = api_settings.jwt_encode_handler
+        # retrieve the jwt token 
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
 
-        # payload = jwt_payload_handler(user_obj)
-        # token = jwt_encode_handler(payload)
-
-        data["token"] = 'token'
+        data["token"] = token
         return data 
 
 

@@ -1,10 +1,14 @@
 
-from .serializers import UserDetailSerializer
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from rest_framework import mixins
+from rest_framework.permissions import (IsAdminUser, 
+                                    IsAuthenticated, 
+                                    AllowAny,
+                                    IsAuthenticatedOrReadOnly)
 from .permissions import IsOwnerOrReadOnly
 from rest_framework.generics import (ListAPIView, 
                                     CreateAPIView,
-                                    RetrieveAPIView,)
+                                    RetrieveAPIView,
+                                    GenericAPIView,)
 
 from .serializers import (UserSerializer,
                         UserDetailSerializer, 
@@ -12,7 +16,9 @@ from .serializers import (UserSerializer,
                         UserLoginSerializer)
 
 from rest_framework.response import Response 
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_204_NO_CONTENT 
+from rest_framework.status import (HTTP_200_OK, 
+                                HTTP_400_BAD_REQUEST, 
+                                HTTP_204_NO_CONTENT)
 from rest_framework.views import APIView 
 
 
@@ -24,58 +30,40 @@ class UserListView(ListAPIView):
     """
     API for list of users for admin.
     """
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
 
 
-class UserDetailView(APIView):
+class UserDetailView(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    GenericAPIView):
     """
-    Retrieve, update a user instance.
+    API for detail of users for admin and owner.
     """
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-    permission_classes = (IsOwnerOrReadOnly, IsAdminUser)
+    permission_classes = (IsOwnerOrReadOnly,)
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
-    def get_object(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            raise Http404
+class UserCreateAPIView(mixins.CreateModelMixin,
+                        GenericAPIView):
 
-    def get(self, request, pk, format=None):
-        user = self.get_object(pk)
-        user = UserDetailSerializer(user)
-        return Response(user.data)
-
-    def put(self, request, pk, format=None):
-        user = self.get_object(pk)
-        serializer = UserDetailSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-
-class UserCreateAPIView(CreateAPIView):
-    """
-    API for register of users.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.all()
     serializer_class = UserCreateSerializer
-    permission_classes = (AllowAny,)
 
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-# from rest_framework_jwt.settings import api_settings
- 
-# jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-# jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
+    
 class UserLoginAPIView(APIView):
-    permission_classes = (AllowAny,)
     serializer_class = UserLoginSerializer
-
 
     def post(self, request, *args, **kwargs):
         data =  request.data
