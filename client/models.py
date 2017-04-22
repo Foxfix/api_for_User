@@ -9,9 +9,13 @@ from decimal import Decimal
 
 class User(AbstractUser):
     """User with app settings.""" 
+    SHIRT_SIZES = (
+        ('Close', 'Close'),
+        ('Open', 'Open'),
+    )
     balance = models.DecimalField(max_digits=20,decimal_places=4,default=Decimal('0.0000'))
     passport_number = models.CharField(max_length=15, default="000000")
-    accaunt = models.BooleanField(default=True)
+    accaunt = models.CharField(max_length=10, choices=SHIRT_SIZES, default='Open')
 
 
 @receiver(pre_save, sender=User)

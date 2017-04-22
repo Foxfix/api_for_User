@@ -56,6 +56,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.passport_number = validated_data.get('passport_number', instance.passport_number)
         instance.accaunt = validated_data.get('accaunt', instance.accaunt)
+        if instance.accaunt == 'Close':
+            instance.is_active = False
+            # instance.save()
         instance.save()
         return instance
 

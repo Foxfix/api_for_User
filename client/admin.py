@@ -44,13 +44,13 @@ class CustomUserAdmin(UserAdmin):
 
         if request.user.is_superuser:
             perm_fields = ('is_active', 'is_staff', 'is_superuser',
-                           'groups', 'user_permissions', 'password')
+                           'groups', 'user_permissions')
         else:
             perm_fields = ('is_active',)
 
         return [(None, {'fields': ('username',)}),
                 (_('Personal info'), {'fields': ('first_name', 'last_name', 
-                    'email', 'balance', 'passport_number', 'balance', 'password')}),
+                    'email', 'balance', 'accaunt', 'passport_number', 'password')}),
                 (_('Permissions'), {'fields': perm_fields}),
                 (_('Important dates'), {'fields': ('last_login', 'date_joined')})] 
 
