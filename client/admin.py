@@ -2,11 +2,9 @@ from django.contrib import admin
 from django import forms 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-# from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext, ugettext_lazy as _ 
-from .models import User
-# from .forms import UserCreationForm
-# # User = get_user_model()
+User = get_user_model()
 
 
 class CustomUserAdmin(UserAdmin):
@@ -25,7 +23,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2')}
+            'fields': ('username', 'email', 'password1', 'password2')}
         ),
     )
     # add_form = UserCreationForm
@@ -73,5 +71,4 @@ class CustomUserAdmin(UserAdmin):
         return qs.filter(is_superuser=False).filter(is_staff=False) 
 
 
-# admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
