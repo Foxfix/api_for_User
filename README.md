@@ -1,4 +1,4 @@
-# api_for_User_AbstractUser
+# api_for_User
 
     git clone https://github.com/Foxfix/api_for_User_AbstractUser.git
     cd api_for_User_AbstractUser/
